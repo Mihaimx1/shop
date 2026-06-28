@@ -3,7 +3,7 @@ const SHOP_URL = 'https://dev.chipy.com/shop';
 
 // This file ONLY covers the "Create an Account" warning note that the shop page
 // shows to logged-out visitors:
-//
+//test
 //   <dialog class="shop-warning-note" open>
 //     <form method="dialog">
 //       <h3>Note: To Purchase Shop Items you Need an Account</h3>
