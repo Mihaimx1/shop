@@ -1,7 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const SHOP_URL = 'https://dev.chipy.com/shop';
 
-// ---------------------------------------------------------------------------
 // This file ONLY covers the "Create an Account" warning note that the shop page
 // shows to logged-out visitors:
 //
