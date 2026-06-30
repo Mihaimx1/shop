@@ -1,4 +1,4 @@
-const { test, expect } = require("@playwright/test");
+const { test, expect } = require("../../_cdp");
 const SHOP_URL = "https://dev.chipy.com/shop";
 //test???
 
@@ -16,12 +16,10 @@ const SHOP_URL = "https://dev.chipy.com/shop";
 //
 // NOTE ON THE REGISTER POPUP:
 // The "Create a Free Account" button carries data-trigger="register-popup",
-// which is supposed to open the registration popup (#register_content). On the
-// current dev build that popup does NOT open for a logged-out visitor: clicking
-// the button (or the header "Join", which uses the same trigger) fires no
-// request and injects no register form into the DOM. Because the feature is not
-// functional here, the popup-open + "close popup then close note" flow is kept
-// as a documented test.skip() below instead of a flaky/failing assertion.
+// which opens the registration popup (#register_content). This works on the
+// current dev build: clicking the button shows #register_content, and the popup
+// is closed via its `.btn-close` control. The full open -> close popup ->
+// close note flow is covered by the third test below.
 // ---------------------------------------------------------------------------
 test.describe("Chipy Shop - create account warning note", () => {
   test.beforeEach(async ({ page }) => {
@@ -82,37 +80,37 @@ test.describe("Chipy Shop - create account warning note", () => {
   });
 
   // ---------------------------------------------------------------------------
-  // 3) (SKIPPED) OPEN REGISTER POPUP, CLOSE IT, THEN CLOSE THE NOTE
+  // 3) OPEN REGISTER POPUP, CLOSE IT, THEN CLOSE THE NOTE
   // ---------------------------------------------------------------------------
-  // Intended behaviour (per spec):
   //   - "Create a Free Account" opens the register popup (#register_content).
-  //   - After closing the popup and then closing the note via its X, the
-  //     warning note must no longer be displayed.
-  //
-  // SKIPPED: the register popup does not open on the current dev build (the
-  // data-trigger="register-popup" handler produces no popup / no request for a
-  // logged-out visitor). Re-enable this test once the popup works on the
-  // environment under test. Adjust the popup + close selectors then.
+  //   - Closing the popup via its `.btn-close` control hides it, while the
+  //     warning note stays underneath.
+  //   - Closing the note via its X then dismisses the note.
   test("Create account button opens register popup; closing popup then note dismisses note", async ({
     page,
   }) => {
     const note = page.locator("dialog.shop-warning-note");
     await expect(note).toBeVisible();
 
-    // Open the register popup from the note CTA.
-    await note.locator(".dialog p").click();
-    await note.locator(".shop-warning-note__create-btn").click();
-
-    // The register popup becomes visible.
+    // Open the register popup from the note CTA. The page binds the
+    // register-popup handler lazily, so the very first click can be swallowed.
+    // Click only while the popup is not yet open and retry until it appears.
     const registerPopup = page.locator("#register_content");
-    await expect(registerPopup).toBeVisible({ timeout: 10000 });
+    await expect(async () => {
+      if (!(await registerPopup.isVisible())) {
+        await note.locator(".shop-warning-note__create-btn").click();
+      }
+      await expect(registerPopup).toBeVisible();
+    }).toPass({ timeout: 15000 });
 
-    // Close the register popup via its close control.
-    await registerPopup
-      .locator('[class*="close"], [aria-label*="lose"]')
-      .first()
-      .click();
-    await expect(registerPopup).toBeHidden({ timeout: 10000 });
+    // Close the register popup via its close (X) control. The close handler is
+    // also bound lazily, so retry the click until the popup is actually hidden.
+    await expect(async () => {
+      if (await registerPopup.isVisible()) {
+        await registerPopup.locator(".btn-close").first().click();
+      }
+      await expect(registerPopup).toBeHidden();
+    }).toPass({ timeout: 15000 });
 
     // The warning note is still underneath — close it via its X.
     await expect(note).toBeVisible();

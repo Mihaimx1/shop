@@ -51,12 +51,15 @@ test.describe('Chipy Shop - Shop Bonuses filter', () => {
     expect(await visibleNonBonus.count()).toBeGreaterThan(0);
 
     // ---- SELECT THE "SHOP BONUSES" FILTER ---------------------------------
-    // Click only while it is not yet active, retrying until it activates.
-    await expect(async () => {
-      const isActive = await bonusesFilter.evaluate((el) => el.classList.contains('active'));
-      if (!isActive) await bonusesFilter.click();
-      await expect(bonusesFilter).toHaveClass(/\bactive\b/);
-    }).toPass({ timeout: 15000 });
+    // Click only while it is NOT yet active. The slider binds lazily so the
+    // first click is swallowed; we keep clicking (with a short pause) until the
+    // button gets the `active` class. Clicking only-when-inactive avoids ever
+    // toggling an already-active radio back off.
+    while (!(await bonusesFilter.evaluate((el) => el.classList.contains('active')).catch(() => false))) {
+      await bonusesFilter.click().catch(() => {});
+      await page.waitForTimeout(600);
+    }
+    await expect(bonusesFilter).toHaveClass(/\bactive\b/);
 
     // ---- WAIT FOR THE FILTER TO ACTUALLY APPLY ----------------------------
     // The list re-renders to bonus-only: no non-bonus cards remain. We wait for
@@ -65,12 +68,15 @@ test.describe('Chipy Shop - Shop Bonuses filter', () => {
     expect(await visibleBonus.count()).toBeGreaterThan(0);
 
     // ---- LOAD EVERY FILTERED ITEM -----------------------------------------
-    // keep clicking "Load More" until it disappears so the whole bonus list is
-    // rendered before we count anything.
-    await expect(async () => {
-      if (await loadMore.isVisible()) await loadMore.click();
-      await expect(loadMore).toBeHidden();
-    }).toPass({ timeout: 30000 });
+    // Keep clicking "Load More" until it disappears so the whole bonus list is
+    // rendered before we count anything. The handler binds lazily, so the first
+    // click can be swallowed — clicking again is harmless, so we just keep
+    // clicking (with a short pause for each batch to render) while the button is
+    // visible. The loop ends exactly when the button is gone.
+    while (await loadMore.isVisible().catch(() => false)) {
+      await loadMore.click().catch(() => {});
+      await page.waitForTimeout(600);
+    }
 
     // ---- FILTERED STATE (after everything is loaded) ----------------------
     // Now that the filter is applied and every item is loaded, the counter holds
@@ -94,9 +100,16 @@ test.describe('Chipy Shop - Shop Bonuses filter', () => {
 
 // & "C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222 --user-data-dir="C:\Temp\chrome-cdp"
 
+// office: 
+// CHROME=$(ls -d /home/razvani/.cache/ms-playwright/chromium-*/chrome-linux64/chrome | sort -V | tail -1)
+// "$CHROME" --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-cdp https://dev.chipy.com/shop &
+
 // Pasul 2 — treci de Cloudflare ca om. În acea fereastră Chrome, intră pe:
 // https://dev.chipy.com/shop
 
 // Pasul 3 — rulează testul (în terminalul tău obișnuit, nu închide Chrome-ul):
 // cd C:\Users\razva\playwright-project
 // npx playwright test tests/chipy/shop/chipy-shop-filter-bonuses.spec.js --project="Google Chrome" --workers=1
+
+// office
+// npx playwright test --config ~/playwright.config.js shop/chipy-shop-filter-bonuses.spec.js --project=chromium --workers=1
