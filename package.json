@@ -1,0 +1,17 @@
+{
+  "name": "shop-playwright-tests",
+  "version": "1.0.0",
+  "description": "Playwright tests for the shop application with Cloudflare workaround.",
+  "main": "index.js",
+  "scripts": {
+    "test:shop": "npx playwright test tests/chipy/shop/",
+    "test:all": "npx playwright test",
+    "test:cdp": "node scripts/run-tests.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.44.1"
+  }
+}
