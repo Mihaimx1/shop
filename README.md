@@ -119,15 +119,3 @@ The `.github/workflows/playwright.yml` file configures GitHub Actions to run the
 
 **Note on Cloudflare in CI/CD:**
 Cloudflare might detect the GitHub Actions environment as suspicious, potentially leading to challenges. The current workflow attempts to use the CDP workaround, but a fully automated bypass for Cloudflare in a headless CI/CD environment can be complex and may require additional strategies (e.g., using a proxy, specific browser headers, or a CAPTCHA solving service) which are beyond the scope of this setup. For robust CI/CD, you might need to investigate these options or consider running tests against a staging environment without Cloudflare protection.
-
-## Transferring to a Company Organization
-
-To transfer this repository to a company organization on GitHub:
-
-1.  **Ensure you have the necessary permissions:** You must have owner permissions in the target organization and admin permissions on the repository you wish to transfer.
-2.  **Navigate to repository settings:** On GitHub, go to your repository's page, then click on "Settings".
-3.  **Find "Transfer ownership":** Scroll down to the "Danger Zone" section and click on "Transfer".
-4.  **Select the new owner:** In the dialog box, type the name of the target organization.
-5.  **Confirm transfer:** Follow the prompts to confirm the transfer. You will need to enter your password.
-
-After the transfer, the repository will belong to the organization, and its visibility (public/private) can be managed by the organization's administrators. Ensure that any sensitive environment variables or secrets are properly configured within the organization's GitHub Actions secrets after the transfer.
