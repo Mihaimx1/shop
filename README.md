@@ -15,22 +15,21 @@ scripts/
 tests/
   _cdp.js
   fixtures.js
-  chipy/
+  chipy/shop/
     chipy-shop-SEO.spec.js
     chipy-shop-by-category.spec.js
     chipy-shop-level-bar-filter.spec.js
     chipy-shop-real-money-filter.spec.js
-    shop/
-      chipy-shop-Q&As.spec.js
-      chipy-shop-article-section.spec.js
-      chipy-shop-create-account-block.spec.js
-      chipy-shop-filter-avatars.spec.js
-      chipy-shop-filter-bonuses.spec.js
-      chipy-shop-page-contributors.spec.js
-      chipy-shop-raffles.spec.js
-      chipy-shop-sold-out-items.spec.js
-      chipy-shop-sortbar.spec.js
-      chipy-shop-upper-section.spec.js
+    chipy-shop-Q&As.spec.js
+    chipy-shop-article-section.spec.js
+    chipy-shop-create-account-block.spec.js
+    chipy-shop-filter-avatars.spec.js
+    chipy-shop-filter-bonuses.spec.js
+    chipy-shop-page-contributors.spec.js
+    chipy-shop-raffles.spec.js
+    chipy-shop-sold-out-items.spec.js
+    chipy-shop-sortbar.spec.js
+    chipy-shop-upper-section.spec.js
 .env.example
 .gitignore
 package.json
