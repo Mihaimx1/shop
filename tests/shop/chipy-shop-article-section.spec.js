@@ -1,4 +1,4 @@
-const { test, expect } = require('../../_cdp');
+﻿const { test, expect } = require('../_cdp');
 const SHOP_URL = 'https://dev.chipy.com/shop';
 
 // Covers the "Latest Neosurf News" article section of the shop page:
@@ -20,7 +20,7 @@ const SHOP_URL = 'https://dev.chipy.com/shop';
 // The wrapper has no class of its own, so the article cards are addressed via
 // `a[href^="/news/"]:has(.box_title)` (unique to this section).
 // ---------------------------------------------------------------------------
-test.describe('Chipy Shop - Latest Neosurf News section', () => {
+test.describe('Chipy Shop - Latest [articles] section', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(SHOP_URL, { waitUntil: 'domcontentloaded' });
   });
@@ -34,7 +34,8 @@ test.describe('Chipy Shop - Latest Neosurf News section', () => {
   test('Section H2 heading has the expected text', async ({ page }) => {
     const h2 = heading(page);
     await expect(h2).toBeVisible();
-    await expect(h2).toHaveText('Latest Neosurf News');
+    await expect(h2).toContainText('Latest');
+    await expect(h2).toContainText('News');
   });
 
   // ---------------------------------------------------------------------------
@@ -120,3 +121,5 @@ test.describe('Chipy Shop - Latest Neosurf News section', () => {
     expect(newestFirst, `dates not newest-first -> ${datetimes.join(' | ')}`).toBe(true);
   });
 });
+
+

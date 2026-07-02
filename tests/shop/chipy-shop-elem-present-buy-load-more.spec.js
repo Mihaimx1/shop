@@ -1,3 +1,5 @@
+﻿const { test, expect } = require('../_cdp');
+
 // =============================================================================
 // HOW TO RUN THIS TEST (Cloudflare workaround via CDP)
 // =============================================================================
@@ -10,16 +12,15 @@
 //            --user-data-dir="C:\Temp\chrome-cdp" `
 //            https://dev.chipy.com/shop
 //   2) In that window, pass Cloudflare if asked and wait for the shop to load.
-//   3) Run the tests (one worker – these tests share one logged-in browser):
+//   3) Run the tests (one worker - these tests share one logged-in browser):
 //        npx playwright test shop/chipy-shop-elem-present-buy-load-more.spec.js --workers=1
 //
 // NOTE ON STATE: several tests here log in as `faneisback` and Tests 7 & 8
 // actually BUY items (bonuses are rate-limited to 1 purchase / day, avatars can
 // only be bought once). Re-running the buy tests may therefore hit "already
-// purchased" / "not enough coins" states – the buy tests are written to skip
+// purchased" / "not enough coins" states - the buy tests are written to skip
 // items that cannot be purchased and pick another one.
 // =============================================================================
-const { test, expect } = require("../fixtures");
 
 const SHOP_URL = "https://dev.chipy.com/shop";
 
@@ -97,20 +98,25 @@ async function ensureLoggedIn(page) {
   const hasLogin = (await logOut.locator("text=Log in").count()) > 0;
   expect(hasLogin, 'expected a "Log in" control inside div.log-out').toBe(true);
 
-  const opener = page.locator("div.log-out__open");
-  const userInput = page.locator("#login_input_username");
+  const opener = page.getByText("Log in", { exact: true }).first();
+  const loginPopup = page.locator('[id*="login"]').first();
+  const textInputs = loginPopup.locator('input[type="text"], input:not([type]), input[type="email"]');
+  const passwordInputs = loginPopup.locator('input[type="password"]');
 
   await expect(async () => {
-    if (!(await userInput.isVisible().catch(() => false))) {
-      await opener.first().click().catch(() => {});
+    if (!(await loginPopup.isVisible().catch(() => false))) {
+      await opener.click({ force: true }).catch(() => {});
+      await page.waitForTimeout(300);
     }
-    await expect(userInput).toBeVisible({ timeout: 2000 });
+    await expect(loginPopup).toBeVisible({ timeout: 2000 });
   }).toPass({ timeout: 30000 });
 
   // Fill the credentials and submit.
+  const userInput = textInputs.first();
+  const passwordInput = passwordInputs.first();
   await userInput.fill(USERNAME);
-  await page.locator("#login_input_password").fill(PASSWORD);
-  await page.locator("button.login_exec").click();
+  await passwordInput.fill(PASSWORD);
+  await loginPopup.locator('button[type="submit"], button.login_exec').first().click();
 
   // Login is done once the header avatar is present.
   await page.locator("#user_img").waitFor({ state: "attached", timeout: 20000 });
@@ -119,7 +125,7 @@ async function ensureLoggedIn(page) {
 
 // Click "Load More" in the Available Items section until it disappears, so
 // every card is rendered. The handler binds lazily, so a click can be swallowed
-// – clicking again is harmless, so we keep clicking while the button is visible.
+// - clicking again is harmless, so we keep clicking while the button is visible.
 async function loadAllAvailable(page) {
   const loadMore = page.locator(`${availableSel} button.shop-load-more`);
   await expect(async () => {
@@ -153,7 +159,7 @@ async function closeSystemMessage(page) {
 }
 
 // =============================================================================
-// TEST 1 – LOG IN + READ THE USER'S AVATAR, LEVEL AND COINS
+// TEST 1 - LOG IN + READ THE USER'S AVATAR, LEVEL AND COINS
 // =============================================================================
 test("Test 1 - Log in and read user avatar, level and coins", async ({ page }) => {
   test.setTimeout(90000);
@@ -161,7 +167,7 @@ test("Test 1 - Log in and read user avatar, level and coins", async ({ page }) =
 
   await ensureLoggedIn(page);
 
-  // Store the four avatar-layer image names (chip1 / head1 / eyes1 / mouth1 …).
+  // Store the four avatar-layer image names (chip1 / head1 / eyes1 / mouth1 ...).
   const avatar = await readUserAvatar(page);
   console.log("Avatar layers:", avatar);
   expect(avatar.body, "avatarBody").toBeTruthy();
@@ -178,7 +184,7 @@ test("Test 1 - Log in and read user avatar, level and coins", async ({ page }) =
 });
 
 // =============================================================================
-// TEST 2 – "LOAD MORE" LOADS EVERY ITEM (data-total === counter === rendered)
+// TEST 2 - "LOAD MORE" LOADS EVERY ITEM (data-total === counter === rendered)
 // =============================================================================
 test("Test 2 - Load More renders every item and the three totals match", async ({ page }) => {
   test.setTimeout(90000);
@@ -198,7 +204,7 @@ test("Test 2 - Load More renders every item and the three totals match", async (
 
   console.log(`data-total=${dataTotal}, counter=${counterTotal}`);
 
-  // Click "Load More" until it disappears – now every card is on the page.
+  // Click "Load More" until it disappears - now every card is on the page.
   await loadAllAvailable(page);
 
   // 3) the number of cards actually rendered.
@@ -211,7 +217,7 @@ test("Test 2 - Load More renders every item and the three totals match", async (
 });
 
 // =============================================================================
-// TEST 3 – EVERY CARD SHOWS ALL THE EXPECTED ELEMENTS
+// TEST 3 - EVERY CARD SHOWS ALL THE EXPECTED ELEMENTS
 // =============================================================================
 // For each card we assert the presence of: logo image, title, coins icon + a
 // coins number, level icon + a level number, the "Buy Now" button and both the
@@ -277,10 +283,10 @@ test("Test 3 - Every card has logo, title, stats, buy button and sold/available 
 });
 
 // =============================================================================
-// TEST 4 – THE INFO ICON SHOWS ITS POPUP ON HOVER
+// TEST 4 - THE INFO ICON SHOWS ITS POPUP ON HOVER
 // =============================================================================
 // Find the FIRST card that actually has an info icon (button.shop-card__tooltip)
-// – the first card in the list is not guaranteed to have one. The popup text
+// - the first card in the list is not guaranteed to have one. The popup text
 // lives in the trigger's URL-encoded `data-description` and is shown by a
 // Tooltipster popup on hover (binds lazily + hover-intent, so we re-hover).
 test("Test 4 - Hovering a card's info icon shows its description popup", async ({ page }) => {
@@ -313,7 +319,7 @@ test("Test 4 - Hovering a card's info icon shows its description popup", async (
 });
 
 // =============================================================================
-// TEST 5 – "TRY IT!" PREVIEWS THE ITEM ON THE BIG AVATAR + EDITOR TABS
+// TEST 5 - "TRY IT!" PREVIEWS THE ITEM ON THE BIG AVATAR + EDITOR TABS
 // =============================================================================
 // Find the FIRST card that has a "Try It!" control (only avatar items have one,
 // and which card is first can change over time). From its logo read:
@@ -397,7 +403,7 @@ test("Test 5 - Try It! previews the item on the big avatar and switches editor t
 });
 
 // =============================================================================
-// TEST 6 – FORBIDDEN BUYS (not enough coins / level too low)
+// TEST 6 - FORBIDDEN BUYS (not enough coins / level too low)
 // =============================================================================
 test("Test 6 - Buying an unaffordable / level-locked item shows the right error", async ({ page }) => {
   test.setTimeout(120000);
@@ -446,12 +452,12 @@ test("Test 6 - Buying an unaffordable / level-locked item shows the right error"
 });
 
 // =============================================================================
-// TEST 7 – BUY A BONUS
+// TEST 7 - BUY A BONUS
 // =============================================================================
 // Collect every card whose logo has the ".bonus" class and is eligible (costs
 // <= 500 coins AND its required level is at or below the user's level). Try the
 // eligible bonuses in random order until one is actually buyable (a few are
-// already bought today – 1 purchase / day), then buy just that one: fill the
+// already bought today - 1 purchase / day), then buy just that one: fill the
 // username field ("test buy") if the confirmation asks for one, confirm with
 // "Yes - Buy Now", expect "Request Submitted!", print the bought bonus's name
 // (its <h3>) and check the coin balance dropped by the item's cost. If none is
@@ -565,7 +571,7 @@ test("Test 7 - Buy a bonus item", async ({ page }) => {
 });
 
 // =============================================================================
-// TEST 8 – BUY AN AVATAR
+// TEST 8 - BUY AN AVATAR
 // =============================================================================
 // Collect every card whose logo has the ".avatar" class, pick ONE random card
 // that costs <= 500 coins AND requires a level below the user's level, and try
@@ -573,7 +579,7 @@ test("Test 7 - Buy a bonus item", async ({ page }) => {
 // logo's data-src (itemNameBuy), confirm, expect "Congratulations!", then
 // re-read the user's avatar layers and confirm itemNameBuy shows up in one of
 // them. If no confirmation appears (item already owned) we log
-// "Nu a fost gasit niciun bonus" and skip – we do NOT click through every card.
+// "Nu a fost gasit niciun bonus" and skip - we do NOT click through every card.
 test("Test 8 - Buy an avatar and see it applied to the user", async ({ page }) => {
   test.setTimeout(180000);
   await page.goto(SHOP_URL, { waitUntil: "domcontentloaded" });
@@ -616,7 +622,7 @@ test("Test 8 - Buy an avatar and see it applied to the user", async ({ page }) =
   const pick = candidates[Math.floor(Math.random() * candidates.length)];
   console.log(`Picked avatar "${pick.name}" (cost ${pick.cost}, level ${pick.reqLevel}+)`);
 
-  // Capture the item's image (data-src) before buying – this is itemNameBuy.
+  // Capture the item's image (data-src) before buying - this is itemNameBuy.
   const itemNameBuy = await cards
     .nth(pick.index)
     .locator(".shop-card__logo img[data-type]")
@@ -659,3 +665,8 @@ test("Test 8 - Buy an avatar and see it applied to the user", async ({ page }) =
     )
     .toBe(true);
 });
+
+
+
+
+

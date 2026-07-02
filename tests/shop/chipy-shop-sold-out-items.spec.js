@@ -1,4 +1,4 @@
-const { test, expect } = require('../../_cdp');
+﻿const { test, expect } = require('../_cdp');
 const SHOP_URL = 'https://dev.chipy.com/shop';
 
 // Covers the "Sold Out Items" section of the shop page:
@@ -17,7 +17,7 @@ const SHOP_URL = 'https://dev.chipy.com/shop';
 //
 // NOTE ON THE INFO POPUP: the info button (.shop-card__tooltip) holds the popup
 // text in its `data-description` attribute. The popup itself is a Tooltipster
-// instance (.tooltipster-base) shown on HOVER — clicking the icon dismisses it.
+// instance (.tooltipster-base) shown on HOVER - clicking the icon dismisses it.
 // Tooltipster binds lazily and uses hover-intent, so the hover test re-hovers
 // (moving the mouse away between tries) until the popup appears.
 // ---------------------------------------------------------------------------
@@ -131,3 +131,7 @@ test.describe('Chipy Shop - Sold Out Items section', () => {
     await expect(page.locator('h1').first()).toHaveText(title);
   });
 });
+
+
+
+

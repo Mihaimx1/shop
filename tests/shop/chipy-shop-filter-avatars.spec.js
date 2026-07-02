@@ -1,8 +1,8 @@
-const { test, expect } = require('../../_cdp');
+﻿const { test, expect } = require('../_cdp');
 const SHOP_URL = 'https://dev.chipy.com/shop';
 
 // The four avatar sub-categories in the Avatars dropdown. NOTE: the data-type on
-// each product's logo image does NOT always match the label — "Hair" items carry
+// each product's logo image does NOT always match the label - "Hair" items carry
 // data-type="head". The dropdown is MULTI-SELECT, so every category is verified
 // from a fresh page load to stop selections from stacking up.
 const AVATAR_CATEGORIES = [
@@ -89,3 +89,7 @@ test.describe('Chipy Shop - Avatars filter', () => {
     }
   });
 });
+
+
+
+

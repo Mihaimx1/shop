@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // HOW TO RUN THIS TEST (Cloudflare workaround via CDP)
 // =============================================================================
 // Same setup as the other shop tests: start a manual Chrome with a debug port,
@@ -13,11 +13,11 @@
 //   3) Run the test:
 //        npx playwright test tests/chipy-shop-by-category.spec.js --workers=1
 //
-// Ask Claude in chat: "Pornește Chrome cu debugging pe portul 9222 și rulează
-// testul tests/chipy-shop-by-category.spec.js" — Claude starts Chrome + runs the
+// Ask Claude in chat: "Start Chrome with debugging on port 9222 and run
+// tests/shop/chipy-shop-by-category.spec.js". Claude starts Chrome and runs the
 // test; you still pass Cloudflare by hand if a challenge appears.
 // =============================================================================
-const { test, expect } = require("../fixtures");
+const { test, expect } = require('../_cdp');
 
 const SHOP_URL = "https://dev.chipy.com/shop";
 const SHOP_ORIGIN = "https://dev.chipy.com";
@@ -68,7 +68,7 @@ test("Shop by Category - boxes, icons, names and counters match their pages", as
   for (let i = 0; i < EXPECTED_BOXES.length; i++) {
     const box = boxes.nth(i);
 
-    // The counter text looks like "See 4 items" — grab the number out of it.
+    // The counter text looks like "See 4 items" - grab the number out of it.
     const counterText = await box.locator("span").textContent();
     const boxCount = parseInt(counterText.replace(/\D/g, ""), 10); // keep digits only
 
@@ -86,7 +86,7 @@ test("Shop by Category - boxes, icons, names and counters match their pages", as
     await page.goto(fullUrl, { waitUntil: "domcontentloaded" });
 
     // The results counter on the category page.
-    const pageCounter = page.locator("div.shop-manage-panel__total > span");
+    const pageCounter = page.getByText(/\b\d+\s+results\b/i).first();
     await expect(pageCounter).toBeVisible({ timeout: 15000 });
 
     // Read it and turn it into a number.
@@ -97,3 +97,5 @@ test("Shop by Category - boxes, icons, names and counters match their pages", as
     expect(pageCount).toBe(item.boxCount);
   }
 });
+
+

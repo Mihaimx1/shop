@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test');
+﻿const { test, expect } = require('../_cdp');
 const SHOP_URL = 'https://dev.chipy.com/shop';
 //test1
 test.describe('Chipy Shop page', () => {
@@ -129,3 +129,7 @@ test.describe('Chipy Shop page', () => {
     );
   });
 });
+
+
+
+

@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // HOW TO RUN THIS TEST (Cloudflare workaround via CDP)
 // =============================================================================
 // Same setup as the Real Money test: start a manual Chrome with a debug port,
@@ -13,11 +13,11 @@
 //   3) Run the test:
 //        npx playwright test tests/chipy-shop-level-bar-filter.spec.js --workers=1
 //
-// Ask Claude in chat: "Pornește Chrome cu debugging pe portul 9222 și rulează
-// testul tests/chipy-shop-level-bar-filter.spec.js" — Claude starts Chrome + runs the
-// test; you still pass Cloudflare by hand if a challenge appears.
+// Ask Claude in chat: "Start Chrome with debugging on port 9222 and run
+// tests/shop/chipy-shop-level-bar-filter.spec.js". Claude starts Chrome and
+// runs the test; you still pass Cloudflare by hand if a challenge appears.
 // =============================================================================
-const { test, expect } = require("../fixtures");
+const { test, expect } = require('../_cdp');
 
 test("Level filter", async ({ page }) => {
   // The dev server builds the slider widget slowly (lazy init on scroll), so
@@ -45,7 +45,7 @@ test("Level filter", async ({ page }) => {
   // DOES reliably build it is interacting with the filter panel. So we select
   // the "Real Money" filter and immediately deselect it: that forces the panel
   // (and the slider) to render, while leaving the list back in its full,
-  // unfiltered state — exactly where we want to start the level test from.
+  // unfiltered state - exactly where we want to start the level test from.
   const realMoneyFilterBtn = page.getByRole("button", {
     name: "Real Money",
     exact: true,
@@ -74,7 +74,7 @@ test("Level filter", async ({ page }) => {
   // start the level filtering from the same state as a fresh page.
   await expect(resultsLocator).toHaveText(initialText, { timeout: 10000 });
 
-  // The slider is now built — wait for its lower handle to be visible.
+  // The slider is now built - wait for its lower handle to be visible.
   await lowerHandle.waitFor({ state: "visible", timeout: 30000 });
 
   // Drag the lower handle to level 15. The scale is 0..20, so 15 sits at 75%
@@ -155,3 +155,7 @@ test("Level filter", async ({ page }) => {
     }
   }
 });
+
+
+
+

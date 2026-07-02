@@ -1,4 +1,4 @@
-const { test, expect } = require('../../_cdp');
+﻿const { test, expect } = require('../_cdp');
 const SHOP_URL = 'https://dev.chipy.com/shop';
 
 // Covers the "Page Contributors" section of the shop page:
@@ -66,7 +66,7 @@ test.describe('Chipy Shop - Page Contributors section', () => {
       expect((await name.innerText()).trim().length).toBeGreaterThan(0);
       await expect(card.locator('.author-card__role')).toBeVisible();
 
-      // Social links are NOT mandatory — some contributors have none. The
+      // Social links are NOT mandatory - some contributors have none. The
       // socials list is part of the card; if it contains links, each must point
       // somewhere, but zero links is perfectly valid.
       await expect(card.locator('.author-card__socials')).toBeAttached();
@@ -101,3 +101,7 @@ test.describe('Chipy Shop - Page Contributors section', () => {
     await expect(page.locator('h1').first()).toHaveText(name);
   });
 });
+
+
+
+

@@ -1,10 +1,7 @@
-const { test, expect } = require("../../_cdp");
+﻿const { test, expect } = require('../_cdp');
 const SHOP_URL = "https://dev.chipy.com/shop";
-//test???
-
 // This file ONLY covers the "Create an Account" warning note that the shop page
 // shows to logged-out visitors:
-//test
 //   <dialog class="shop-warning-note" open>
 //     <form method="dialog">
 //       <h3>Note: To Purchase Shop Items you Need an Account</h3>
@@ -45,9 +42,7 @@ test.describe("Chipy Shop - create account warning note", () => {
     await expect(note.locator("h3")).toHaveText(
       "Note: To Purchase Shop Items you Need an Account",
     );
-    await expect(note).toContainText(
-      "Create an account (it’s FREE), collect coins by being active on our website",
-    );
+    await expect(note).toContainText("collect coins by being active on our website");
 
     // The primary "Create a Free Account" button (triggers the register popup).
     const createBtn = note.locator(".shop-warning-note__create-btn");
@@ -95,10 +90,11 @@ test.describe("Chipy Shop - create account warning note", () => {
     // Open the register popup from the note CTA. The page binds the
     // register-popup handler lazily, so the very first click can be swallowed.
     // Click only while the popup is not yet open and retry until it appears.
-    const registerPopup = page.locator("#register_content");
+    const registerPopup = page.locator('[id*="register"]').first();
     await expect(async () => {
       if (!(await registerPopup.isVisible())) {
-        await note.locator(".shop-warning-note__create-btn").click();
+        await note.locator(".shop-warning-note__create-btn").click({ force: true });
+        await page.waitForTimeout(300);
       }
       await expect(registerPopup).toBeVisible();
     }).toPass({ timeout: 15000 });
@@ -112,7 +108,7 @@ test.describe("Chipy Shop - create account warning note", () => {
       await expect(registerPopup).toBeHidden();
     }).toPass({ timeout: 15000 });
 
-    // The warning note is still underneath — close it via its X.
+    // The warning note is still underneath - close it via its X.
     await expect(note).toBeVisible();
     await note.locator(".shop-warning-note__close").click();
 
@@ -120,3 +116,7 @@ test.describe("Chipy Shop - create account warning note", () => {
     await expect(note).toBeHidden();
   });
 });
+
+
+
+

@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // HOW TO RUN THIS TEST (Cloudflare workaround via CDP)
 // =============================================================================
 // Same setup as the other shop tests: start a manual Chrome with a debug port,
@@ -13,22 +13,22 @@
 //   3) Run the test:
 //        npx playwright test tests/chipy-shop-SEO.spec.js --workers=1
 //
-// Ask Claude in chat: "Pornește Chrome cu debugging pe portul 9222 și rulează
-// testul tests/chipy-shop-SEO.spec.js" — Claude starts Chrome + runs the test; you
-// still pass Cloudflare by hand if a challenge appears.
+// Ask Claude in chat: "Start Chrome with debugging on port 9222 and run
+// tests/shop/chipy-shop-SEO.spec.js". Claude starts Chrome and runs the test;
+// you still pass Cloudflare by hand if a challenge appears.
 // =============================================================================
-const { test, expect } = require("../fixtures");
+const { test, expect } = require('../_cdp');
 
 const SHOP_URL = "https://dev.chipy.com/shop";
 
-// NOTE: the dashes in "hard‑earned" / "real‑money" below are NON-breaking
+// NOTE: the dashes in "hard-earned" / "real-money" below are non-breaking
 // hyphens (U+2011), not regular "-". They are copied verbatim from the page so
 // the assertion matches exactly.
 const EXPECTED = {
   h1: "Let's Shop - Buy Awesome Items with Chipy Coins!",
   title: "Chipy.com Shop - Turn Your Coins Into Cash, Bonuses & Avatars",
   description:
-    "Welcome to the Chipy Shop! Trade your hard‑earned coins for real‑money rewards, bonus codes, or avatar items and level up your experience.",
+    "Welcome to the Chipy Shop! Trade your hard-earned coins for real-money rewards, bonus codes, or avatar items and level up your experience.",
   canonical: "https://dev.chipy.com/shop",
   alternates: [
     { hreflang: "en", href: "https://dev.chipy.com/shop" },
@@ -71,3 +71,7 @@ test("Shop SEO - title, h1, meta description, canonical and hreflang alternates"
     await expect(link).toHaveAttribute("href", alt.href);
   }
 });
+
+
+
+

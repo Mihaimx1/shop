@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // CUM RULEZ ACEST TEST (workaround Cloudflare prin CDP)
 // =============================================================================
 // Site-ul e protejat de Cloudflare, care blocheaza browserul lansat de Playwright.
@@ -17,13 +17,13 @@
 //   3) Ruleaza testul:
 //        npx playwright test tests/chipy-shop-real-money-filter.spec.js --workers=1
 //
-// CE SA-I CER LUI CLAUDE IN CHAT ca sa faca el partea automata:
-//   "Pornește Chrome cu debugging pe portul 9222 și rulează testul
-//    tests/chipy-shop-real-money-filter.spec.js"
-//   -> Claude porneste Chrome + ruleaza testul. Pasul cu Cloudflare (daca apare)
-//      trebuie facut de tine manual in fereastra — Claude nu poate trece de el.
+// What to ask Claude in chat for the automated part:
+//   "Start Chrome with debugging on port 9222 and run
+//    tests/shop/chipy-shop-real-money-filter.spec.js"
+//   -> Claude starts Chrome and runs the test. The Cloudflare step, if it
+//      appears, still needs to be handled manually in the browser window.
 // =============================================================================
-const { test, expect } = require("../fixtures");
+const { test, expect } = require('../_cdp');
 
 test("Real Money filter - results count and card titles match", async ({
   page,
@@ -74,7 +74,7 @@ test("Real Money filter - results count and card titles match", async ({
   const resultsText = await resultsLocator.textContent();
   // Convert that text into an actual number so we can compare it with counts.
   const resultsNumber = parseInt(resultsText);
-  // Print the number to the test output — handy for debugging while developing.
+  // Print the number to the test output - handy for debugging while developing.
   console.log(`Total results after filtering: ${resultsNumber}`);
 
   if (resultsNumber === 0) {
@@ -111,3 +111,7 @@ test("Real Money filter - results count and card titles match", async ({
     }
   }
 });
+
+
+
+
