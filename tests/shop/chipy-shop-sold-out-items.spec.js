@@ -1,4 +1,4 @@
-﻿const { test, expect } = require('../_cdp');
+﻿const { test, expect } = require('../support/cdp');
 const SHOP_URL = 'https://dev.chipy.com/shop';
 
 // Covers the "Sold Out Items" section of the shop page:

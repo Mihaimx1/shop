@@ -1,4 +1,4 @@
-﻿const { test, expect } = require('../_cdp');
+﻿const { test, expect } = require('../support/cdp');
 
 // =============================================================================
 // HOW TO RUN THIS TEST (Cloudflare workaround via CDP)
@@ -99,13 +99,23 @@ async function ensureLoggedIn(page) {
   expect(hasLogin, 'expected a "Log in" control inside div.log-out').toBe(true);
 
   const opener = page.getByText("Log in", { exact: true }).first();
-  const loginPopup = page.locator('[id*="login"]').first();
-  const textInputs = loginPopup.locator('input[type="text"], input:not([type]), input[type="email"]');
+  const loginPrompt = page.locator(".tooltipster-base.prompt");
+  const promptLoginLink = loginPrompt.locator('[data-trigger="login-popup"]');
+  const loginPopup = page.locator('[id*="login"]:visible').first();
+  const textInputs = loginPopup.locator(
+    'input[type="text"], input:not([type]), input[type="email"]',
+  );
   const passwordInputs = loginPopup.locator('input[type="password"]');
 
   await expect(async () => {
-    if (!(await loginPopup.isVisible().catch(() => false))) {
+    if (!(await loginPrompt.isVisible().catch(() => false))) {
       await opener.click({ force: true }).catch(() => {});
+      await page.waitForTimeout(300);
+    }
+    await expect(loginPrompt).toBeVisible({ timeout: 2000 });
+
+    if (!(await loginPopup.isVisible().catch(() => false))) {
+      await promptLoginLink.click({ force: true }).catch(() => {});
       await page.waitForTimeout(300);
     }
     await expect(loginPopup).toBeVisible({ timeout: 2000 });
@@ -665,7 +675,6 @@ test("Test 8 - Buy an avatar and see it applied to the user", async ({ page }) =
     )
     .toBe(true);
 });
-
 
 
 

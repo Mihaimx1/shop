@@ -1,4 +1,4 @@
-﻿const { test, expect } = require('../_cdp');
+﻿const { test, expect } = require('../support/cdp');
 const ITEM_URL = 'https://dev.chipy.com/item-name/311-free-spins-test';
 
 // Covers, on a single shop item page:

@@ -3,6 +3,7 @@ const { spawnSync } = require('child_process');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const readline = require('readline');
 
 const CDP_PORT = 9222;
 const CDP_URL = `http://localhost:${CDP_PORT}`;
@@ -46,6 +47,25 @@ function waitForCDP(port = CDP_PORT, timeout = 15000) {
   });
 }
 
+function waitForEnter(prompt = 'Press Enter after you finish Cloudflare in Chrome...') {
+  return new Promise((resolve) => {
+    if (!process.stdin.isTTY) {
+      resolve();
+      return;
+    }
+
+    const reader = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+
+    reader.question(`${prompt}\n`, () => {
+      reader.close();
+      resolve();
+    });
+  });
+}
+
 async function runTests() {
   const userArgs = process.argv.slice(2);
   const testArgs = userArgs.length > 0 ? userArgs : [getTestPath()];
@@ -57,6 +77,8 @@ async function runTests() {
     await waitForCDP(CDP_PORT);
     console.log('CDP endpoint is ready.');
     console.log('Chrome profile is persistent by default.');
+    console.log('You can now pass Cloudflare in the opened Chrome window.');
+    await waitForEnter();
 
     process.env.CDP_URL = CDP_URL;
 

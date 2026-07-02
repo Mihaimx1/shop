@@ -23,7 +23,7 @@
 //   -> Claude starts Chrome and runs the test. The Cloudflare step, if it
 //      appears, still needs to be handled manually in the browser window.
 // =============================================================================
-const { test, expect } = require('../_cdp');
+const { test, expect } = require('../support/cdp');
 
 test("Real Money filter - results count and card titles match", async ({
   page,

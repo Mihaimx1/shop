@@ -1,4 +1,4 @@
-﻿const { test, expect } = require('../_cdp');
+﻿const { test, expect } = require('../support/cdp');
 const SHOP_URL = 'https://dev.chipy.com/shop';
 
 // The four avatar sub-categories in the Avatars dropdown. NOTE: the data-type on

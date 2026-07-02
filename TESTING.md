@@ -15,7 +15,8 @@ code and runner helpers around them.
   debugging enabled so Playwright can attach over CDP. It uses a persistent
   Chrome profile by default.
 - `scripts/run-tests.js` orchestrates the CDP flow: launch Chrome, wait for the
-  debugging endpoint, and run Playwright with the right environment.
+  debugging endpoint, pause for manual Cloudflare handling, and run Playwright
+  with the right environment.
 - `package.json` exposes the supported entry points for running the suite.
 
 ## Usage
@@ -23,7 +24,8 @@ code and runner helpers around them.
 - `npm run test:shop` runs the shop spec folder directly.
 - `npm run test:all` runs all Playwright specs under `tests`.
 - `npm run test:cdp` launches Chrome and then runs the suite through the CDP
-  helper.
+  helper. The runner pauses after Chrome opens so you can pass Cloudflare and
+  press Enter to continue.
 
 ## Persistent Profile
 
