@@ -1,28 +1,6 @@
 const { test, expect } = require('./cdp-fixtures');
 const ITEM_URL = 'https://dev.chipy.com/item-name/311-free-spins-test';
 
-// Covers the "Relevant Pages" section on a single shop item page:
-//   <section class="relevant-pages-for-shop">
-//     <h2>Relevant pages for Wixstars Casino</h2>
-//     <div class="relevant-pages-for-shop__cards">
-//       <a class="relevant-pages-for-shop__card relevant-pages-for-shop__card--casino"
-//          href="/casinos/wixstars-casino-review">
-//         <strong>Wixstars Casino Review</strong>
-//         <div class="relevant-pages-for-shop__card-stats">
-//           <span class="rating">4.4</span><span class="stars">...</span>
-//           <span class="rating-text"><span>Very Good</span> (148 votes)</span>
-//         </div>
-//       </a>
-//       <a class="relevant-pages-for-shop__card relevant-pages-for-shop__card--bonus"
-//          href="/bonus-blog/casino/wixstars-casino-bonus-codes">
-//         <strong>Wixstars Casino Bonus Codes</strong><span>517 active bonuses</span>
-//       </a>
-//     </div>
-//   </section>
-//
-// NOTE: the casino name (and the slug inside the hrefs) can change per item, so
-// the tests assert only casino-name-INDEPENDENT things: the stable "Relevant
-// pages for" heading prefix and href PATTERNS, never the literal "Wixstars".
 // ---------------------------------------------------------------------------
 
 // Brand accent colours of the card titles (stable, not tied to the casino).
