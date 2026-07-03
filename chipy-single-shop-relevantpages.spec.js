@@ -1,13 +1,11 @@
 const { test, expect } = require('./cdp-fixtures');
 const ITEM_URL = 'https://dev.chipy.com/item-name/311-free-spins-test';
 
-// ---------------------------------------------------------------------------
-
-// Brand accent colours of the card titles (stable, not tied to the casino).
+// Brand accent colours of the card titles
 const COLORS = {
   h2:          'rgb(64, 64, 64)',
-  casinoTitle: 'rgb(66, 155, 244)', // blue
-  bonusTitle:  'rgb(255, 81, 88)',  // red
+  casinoTitle: 'rgb(66, 155, 244)', 
+  bonusTitle:  'rgb(255, 81, 88)', 
 };
 
 test.describe('Chipy single item - Relevant Pages section', () => {

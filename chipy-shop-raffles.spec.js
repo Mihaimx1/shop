@@ -1,23 +1,6 @@
 const { test, expect } = require('./cdp-fixtures');
 const SHOP_URL = 'https://dev.chipy.com/shop';
 
-// Covers the "Raffles" section of the shop page (raffles == "sweepstakes"):
-//   <h2>Chipy's Exclusive Online Raffles - Win Real Money & Coins Prizes</h2>
-//   <div class="sweepstake-list js-slider_section">
-//     <a class="sweepstake-item" href="/sweepstakes/...">
-//       <img alt="...">
-//       <div class="sweepstake-date-start">Ends on ...</div>
-//       <h3 class="h3title">...</h3>
-//       <div class="description-text">...</div>
-//       <div class="info-bottom"> ...<span class="level-ic">Level N+</span> </div>
-//     </a> ...
-//   </div>
-//   <a class="load-more-btn" href="/sweepstakes">All Raffles</a>
-//
-// The cards are ordered by their required level, ascending. There are two
-// `.sweepstake-list` nodes on the page, so the cards are addressed directly via
-// `a.sweepstake-item`.
-// ---------------------------------------------------------------------------
 test.describe('Chipy Shop - Raffles section', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(SHOP_URL, { waitUntil: 'domcontentloaded' });
@@ -27,7 +10,7 @@ test.describe('Chipy Shop - Raffles section', () => {
   const cards   = (page) => page.locator('a.sweepstake-item');
 
   // ---------------------------------------------------------------------------
-  // 1) THE H2 HEADING
+  // 1) CHECK H2
   // ---------------------------------------------------------------------------
   test('Section H2 heading has the expected text', async ({ page }) => {
     const h2 = heading(page);

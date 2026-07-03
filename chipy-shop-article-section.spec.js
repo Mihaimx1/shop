@@ -1,7 +1,6 @@
 const { test, expect } = require('./cdp-fixtures');
 const SHOP_URL = 'https://dev.chipy.com/shop';
 
-
 // ---------------------------------------------------------------------------
 test.describe('Chipy Shop - Latest [articles] section', () => {
   test.beforeEach(async ({ page }) => {

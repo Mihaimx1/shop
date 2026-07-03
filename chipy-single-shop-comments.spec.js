@@ -1,7 +1,6 @@
 const { test, expect } = require('./cdp-fixtures');
 const { ensureLoggedIn } = require('./chipy-auth');
 
-// ---------------------------------------------------------------------------
 const ITEM_URL = 'https://dev.chipy.com/item-name/311-free-spins-test';
 const CREDENTIALS = { username: 'crosby54', password: 'q1w2e3r4' };
 
@@ -12,9 +11,7 @@ async function submitComment(page) {
 }
 
 // Opens the comment editor and returns the CKEditor editable + counter locators.
-// The comment box is a CKEditor that is wired up ("Add new comment" reveals the
-// editable) only once the large deferred JS bundle has run, so the click is
-// retried until the editable appears; then we wait for CKEditor to be ready.
+// The comment box is a CKEditor that is wired up, the click is retried until the editable appears and CKEditor is ready.
 async function openCommentEditor(page) {
   const addBtn = page.locator('.shop-comments__add-comment').first();
   await expect(addBtn).toBeVisible();

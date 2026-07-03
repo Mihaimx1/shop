@@ -1,7 +1,6 @@
 const { test, expect } = require('./cdp-fixtures');
 const ITEM_URL = 'https://dev.chipy.com/item-name/311-free-spins-test';
 
-// ---------------------------------------------------------------------------
 test.describe('Chipy single item - Related items section', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(ITEM_URL, { waitUntil: 'domcontentloaded' });
@@ -62,7 +61,7 @@ test.describe('Chipy single item - Related items section', () => {
     expect(count).toBeGreaterThan(0);
 
     // The logo image is tagged with its item type; for this section it is always
-    // "bonus" (and the class carries the same marker).
+    // "bonus"
     for (let i = 0; i < count; i++) {
       await expect(logos.nth(i)).toHaveAttribute('data-type', 'bonus');
       await expect(logos.nth(i)).toHaveClass(/\bbonus\b/);
@@ -82,11 +81,11 @@ test.describe('Chipy single item - Related items section', () => {
       const cls = (await buy.getAttribute('class')) || '';
 
       if (cls.includes('shop-buy-button--sold-out')) {
-        // Sold out: button says so, and the bottom row carries the sold-out mark.
+        // Sold out: button says so + bottom row, sold-out mark.
         await expect(buy).toHaveText(/Sold Out/i);
         await expect(card.locator('.shop-card__bottom .sold-out')).toBeVisible();
       } else {
-        // Available: active button says "Buy Now" and an availability count shows.
+        // Available: active button says "Buy Now" + availability count shows.
         await expect(buy).toHaveClass(/shop-buy-button--active/);
         await expect(buy).toHaveText(/Buy Now/i);
         await expect(card.locator('.shop-card__bottom')).toContainText(/\d+\s*available/i);

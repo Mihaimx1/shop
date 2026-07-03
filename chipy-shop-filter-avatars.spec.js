@@ -1,10 +1,9 @@
 const { test, expect } = require('./cdp-fixtures');
 const SHOP_URL = 'https://dev.chipy.com/shop';
 
-// The four avatar sub-categories in the Avatars dropdown. NOTE: the data-type on
-// each product's logo image does NOT always match the label — "Hair" items carry
-// data-type="head". The dropdown is MULTI-SELECT, so every category is verified
-// from a fresh page load to stop selections from stacking up.
+// The four avatar sub-categories in the Avatars dropdown.
+//  NOTE: the data-type on each product's logo image does NOT
+//  always match the label — "Hair" items carry data-type="head".
 const AVATAR_CATEGORIES = [
   { label: 'Body',  optionId: '#avatar-body',  dataType: 'body'  },
   { label: 'Hair',  optionId: '#avatar-hair',  dataType: 'head'  },
@@ -24,8 +23,7 @@ test.describe('Chipy Shop - Avatars filter', () => {
     const avatarsToggler = page.locator('button#avatars.shop-filters__item--toggler');
 
     // The "Available Items" section: holds the cards, the "Load More" button and
-    // the results counter. Scoped here so the separate "Sold Out Items" section
-    // (data-section="soldOut") is ignored entirely.
+    // the results counter.
     const availableSection = page.locator('section.shop-main-section', {
       has: page.locator('.shop-manage-panel'),
     });
@@ -50,8 +48,8 @@ test.describe('Chipy Shop - Avatars filter', () => {
 
         // ---- OPEN THE AVATARS DROPDOWN ------------------------------------
         // Click the avatars filter only while the panel is still closed,
-        // retrying until #avatarsDD is actually displayed (avoids toggling it
-        // back shut).
+        // retrying until #avatarsDD is actually displayed
+
         await expect(async () => {
           if (!(await dropdownOpen())) {
             await avatarsToggler.scrollIntoViewIfNeeded();
@@ -68,8 +66,7 @@ test.describe('Chipy Shop - Avatars filter', () => {
         expect(await visibleMatch.count()).toBeGreaterThan(0);
 
         // ---- LOAD EVERY FILTERED ITEM -------------------------------------
-        // Keep clicking "Load More" until it disappears (lazy-init may swallow
-        // the first click, so we just keep clicking while it is visible).
+        // Keep clicking "Load More" until it disappears
         while (await loadMore.isVisible().catch(() => false)) {
           await loadMore.click().catch(() => {});
           await page.waitForTimeout(600);

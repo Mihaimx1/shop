@@ -1,25 +1,6 @@
 const { test, expect } = require('./cdp-fixtures');
 const SHOP_URL = 'https://dev.chipy.com/shop';
 
-// Covers the "Shop Q&As" section of the shop page:
-//   <section class="qna-section">
-//     <h2 class="qna__title" id="qna">Shop Q&As</h2>
-//     <div class="qna-section__list">
-//       <div class="qna-card">
-//         ...avatar / user / <span class="level"> ...
-//         <time class="comments__time" datetime="2026-03-19 12:19:59">Mar 19, 2026</time>
-//         <a class="qna-card__title qna-card__title--link" href="/questions/1246/...">title</a>
-//         <div class="qna-card__body">...</div>
-//         <div class="qna-card__stats">...followers / answers...</div>
-//       </div>
-//       ...
-//     </div>
-//     <a class="qna-section__ask-btn" href="/questions/ask">Ask a Question</a>
-//   </section>
-//
-// The cards are ordered by their <time> (shown on the right of each card),
-// newest first.
-// ---------------------------------------------------------------------------
 test.describe('Chipy Shop - Q&As section', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(SHOP_URL, { waitUntil: 'domcontentloaded' });
@@ -29,7 +10,7 @@ test.describe('Chipy Shop - Q&As section', () => {
   const cards = (page) => qna(page).locator('.qna-section__list .qna-card');
 
   // ---------------------------------------------------------------------------
-  // 1) THE H2 HEADING
+  // 1) CHECK H2
   // ---------------------------------------------------------------------------
   test('Section H2 heading has the expected text', async ({ page }) => {
     const section = qna(page);
@@ -59,7 +40,7 @@ test.describe('Chipy Shop - Q&As section', () => {
       await expect(time).toBeVisible();
       await expect(time).toHaveAttribute('datetime', /\d{4}-\d{2}-\d{2}/);
 
-      // Title link -> a question page, with non-empty text.
+      // Title link -> a question page.
       const titleLink = card.locator('a.qna-card__title--link');
       await expect(titleLink).toBeVisible();
       await expect(titleLink).toHaveAttribute('href', /^\/questions\/\d+/);

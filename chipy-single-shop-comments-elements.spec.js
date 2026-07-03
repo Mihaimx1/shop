@@ -1,13 +1,10 @@
 const { test, expect } = require('./cdp-fixtures');
-
-// ---------------------------------------------------------------------------
 const ITEM_URL = 'https://dev.chipy.com/item-name/311-free-spins-test';
 
-// Top-level comments only (replies are data-role="reply", nested + chronological).
+// Top-level comments only (replies are data-role="reply").
 const TOP_COMMENTS = '#comments_wrap .comments__wrap[data-role="comment"]';
 
-// Picks a sort option. The sort is a delegated click handler that only attaches
-// after the deferred JS bundle runs, so the click is retried until it registers
+// Picks a sort option, the click is retried until it registers
 // (the #sort-txt label reflects the chosen option).
 async function sortBy(page, orderBy) {
   const label = orderBy === 'newest' ? 'Newest' : 'Most Helpful';
@@ -74,12 +71,12 @@ test.describe('Chipy single item - comment elements & sorting', () => {
     for (let i = 0; i < count; i++) {
       const c = comments.nth(i);
 
-      // Author (the visible username, not the hidden "(Question owner)" tag).
+      // Author (the visible username).
       const user = c.locator('.comments__user').first();
       await expect(user).toBeVisible();
       expect((await user.innerText()).trim().length).toBeGreaterThan(0);
 
-      // Level, e.g. "Level 7".
+      // Level.
       await expect(c.locator('.level_and_country .level').first()).toHaveText(/Level\s*\d+/i);
     }
   });
@@ -126,7 +123,7 @@ test.describe('Chipy single item - comment elements & sorting', () => {
     const comments = await readComments(page);
     expect(comments.length).toBeGreaterThan(1);
 
-    // The datetime attribute is "YYYY-MM-DD HH:MM:SS", i.e. lexically sortable,
+    // The datetime attribute is "YYYY-MM-DD HH:MM:SS", lexically sortable,
     // so each comment must be at least as new as the one after it.
     for (let i = 1; i < comments.length; i++) {
       expect(
@@ -151,7 +148,7 @@ test.describe('Chipy single item - comment elements & sorting', () => {
     const comments = await readComments(page);
     expect(comments.length).toBeGreaterThan(1);
 
-    // Helpful counts must be non-increasing down the list (ties allowed).
+    // Helpful counts must be non-increasing down the list.
     for (let i = 1; i < comments.length; i++) {
       expect(
         comments[i - 1].helpful >= comments[i].helpful,
