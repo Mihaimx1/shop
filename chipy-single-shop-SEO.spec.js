@@ -1,16 +1,14 @@
 const { test, expect } = require('./cdp-fixtures');
-
-// SEO checks for a single shop item page.
 const ITEM_URL = 'https://dev.chipy.com/item-name/311-free-spins-test';
 
-// Expected SEO values for this item (dev data).
+// Expected SEO values for this item
 const EXPECTED = {
-  title:       '311 Free Spins Test',   // <title> / meta title
-  description: '311 Free Spins Test',   // <meta name="description">
-  h1:          '311 Free Spins test',   // the on-page heading
-  canonical:   ITEM_URL,                // <link rel="canonical">
+  title:       '311 Free Spins Test',   
+  description: '311 Free Spins Test',   
+  h1:          '311 Free Spins test',   
+  canonical:   ITEM_URL,                
 
-  // <link rel="alternate" hreflang="..."> — the other language versions.
+  // save the alternates
   alternates: {
     en: ITEM_URL,
     de: 'https://dev.chipy.com/de/artikelname/150-freispiele-fuer-tarot-destiny-bei-diamond-reels',
@@ -45,7 +43,7 @@ test.describe('Chipy single item - SEO (title, meta description, H1)', () => {
   // ---------------------------------------------------------------------------
   test('Page has exactly one H1 with the expected text', async ({ page }) => {
     const h1 = page.locator('h1');
-    // SEO best practice: a single H1 per page.
+    // SEO best practice: check for a single H1 per page
     await expect(h1).toHaveCount(1);
     await expect(h1).toHaveText(EXPECTED.h1);
   });
@@ -63,7 +61,7 @@ test.describe('Chipy single item - SEO (title, meta description, H1)', () => {
   test('Page exposes the expected hreflang alternates', async ({ page }) => {
     const alternates = page.locator('link[rel="alternate"][hreflang]');
 
-    // Exactly the languages we expect, no more, no less.
+    // check if no alternate is missing or extra
     await expect(alternates).toHaveCount(Object.keys(EXPECTED.alternates).length);
 
     // Each language points at the right URL.

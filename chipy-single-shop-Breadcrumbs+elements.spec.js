@@ -1,32 +1,6 @@
 const { test, expect } = require('./cdp-fixtures');
 const ITEM_URL = 'https://dev.chipy.com/item-name/311-free-spins-test';
 
-// Covers, on a single shop item page:
-//   - the breadcrumbs (present, correct links, home icon alt)
-//   - the item box: name, logo, stats (price, min. level, ...), buy button
-//   - the item description
-//
-// BREADCRUMBS markup:
-//   <div class="breadcrumbs card__pagination">
-//     <a class="prev_page card__pagination-home" href="/"><img class="homepage-icon" alt="homepage icon"></a>
-//     <a class="prev_page" href="/shop">Shop</a>
-//     <a class="prev_page" href="/item-type/Bonus">Shop Bonuses</a>
-//     <span class="current_page">311 Free Spins test</span>
-//   </div>
-//
-// ITEM BOX markup:
-//   <article class="single-shop-card">
-//     <h2 class="single-shop-card__name">311 Free Spins test</h2>
-//     <div class="single-shop-card__stats">
-//       <span>...Price:<strong>11</strong></span>
-//       <span>...Min. level:<strong>1</strong></span> ... (Available, Sold, Wagering,
-//       Min. deposit, Max. cashout, Games)
-//     </div>
-//     <button class="shop-buy-button shop-buy-button--active">Buy Now</button>
-//     <div class="single-shop-card__caption">Item Description</div>
-//     <div class="single-shop-card__description">...</div>
-//   </article>
-// ---------------------------------------------------------------------------
 test.describe('Chipy single item - breadcrumbs & item box', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(ITEM_URL, { waitUntil: 'domcontentloaded' });
@@ -90,9 +64,8 @@ test.describe('Chipy single item - breadcrumbs & item box', () => {
       await expect(row.locator('img')).toHaveAttribute('alt', alt);
     }
 
-    // Clicking "Buy Now" while logged out opens the login/join prompt. The
-    // button binds lazily (first click is swallowed), so click only while the
-    // prompt is not yet shown and retry until it appears.
+    // Clicking "Buy Now" while logged out opens the login/join prompt. 
+    // click only while the prompt is not yet shown and retry until it appears.
     const buyBtn = card.locator('.shop-buy-button');
     await expect(buyBtn).toHaveText('Buy Now');
 

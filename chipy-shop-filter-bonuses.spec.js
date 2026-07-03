@@ -38,8 +38,7 @@ test.describe('Chipy Shop - Shop Bonuses filter', () => {
     const counter  = availableSection.locator('.shop-manage-panel__total span');
 
     // Every shop card currently visible, and the bonus / non-bonus subsets.
-    // Scoped to the "Available Items" section so the separate "Sold Out Items"
-    // section (data-section="soldOut") is ignored entirely.
+
     const visibleCards    = availableSection.locator('article.shop-card:visible');
     const visibleBonus    = availableSection.locator('article.shop-card:visible:has(img[data-type="bonus"])');
     const visibleNonBonus = availableSection.locator('article.shop-card:visible:not(:has(img[data-type="bonus"]))');
@@ -51,10 +50,9 @@ test.describe('Chipy Shop - Shop Bonuses filter', () => {
     expect(await visibleNonBonus.count()).toBeGreaterThan(0);
 
     // ---- SELECT THE "SHOP BONUSES" FILTER ---------------------------------
-    // Click only while it is NOT yet active. The slider binds lazily so the
-    // first click is swallowed; we keep clicking (with a short pause) until the
-    // button gets the `active` class. Clicking only-when-inactive avoids ever
-    // toggling an already-active radio back off.
+    // Click only while it is NOT yet active.
+    //  we keep clicking (with a short pause) until the button gets the `active` class.
+
     while (!(await bonusesFilter.evaluate((el) => el.classList.contains('active')).catch(() => false))) {
       await bonusesFilter.click().catch(() => {});
       await page.waitForTimeout(600);
@@ -62,17 +60,13 @@ test.describe('Chipy Shop - Shop Bonuses filter', () => {
     await expect(bonusesFilter).toHaveClass(/\bactive\b/);
 
     // ---- WAIT FOR THE FILTER TO ACTUALLY APPLY ----------------------------
-    // The list re-renders to bonus-only: no non-bonus cards remain. We wait for
-    // this before reading the counter, otherwise it still shows the full total.
+
     await expect(visibleNonBonus).toHaveCount(0);
     expect(await visibleBonus.count()).toBeGreaterThan(0);
 
     // ---- LOAD EVERY FILTERED ITEM -----------------------------------------
     // Keep clicking "Load More" until it disappears so the whole bonus list is
-    // rendered before we count anything. The handler binds lazily, so the first
-    // click can be swallowed — clicking again is harmless, so we just keep
-    // clicking (with a short pause for each batch to render) while the button is
-    // visible. The loop ends exactly when the button is gone.
+    // rendered before we count anything.
     while (await loadMore.isVisible().catch(() => false)) {
       await loadMore.click().catch(() => {});
       await page.waitForTimeout(600);
@@ -92,35 +86,3 @@ test.describe('Chipy Shop - Shop Bonuses filter', () => {
     await expect(visibleBonus).toHaveCount(expectedCount);
   });
 });
-
-
-
-// for run: Cei 3 pași — fă-i în ordine
-// Pasul 1 — pornește un Chrome cu „debugging" activat. Deschide PowerShell și rulează:
-
-// & "C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222 --user-data-dir="C:\Temp\chrome-cdp"
-
-// office: 
-// CHROME=$(ls -d /home/razvani/.cache/ms-playwright/chromium-*/chrome-linux64/chrome | sort -V | tail -1)
-// "$CHROME" --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-cdp https://dev.chipy.com/shop &
-
-// Pasul 2 — treci de Cloudflare ca om. În acea fereastră Chrome, intră pe:
-// https://dev.chipy.com/shop
-
-// Pasul 3 — rulează testul (în terminalul tău obișnuit, nu închide Chrome-ul):
-// cd C:\Users\razva\playwright-project
-// npx playwright test tests/chipy/shop/chipy-shop-filter-bonuses.spec.js --project="Google Chrome" --workers=1
-
-// office
-// npx playwright test --config ~/playwright.config.js shop/chipy-shop-filter-bonuses.spec.js --project=chromium --workers=1
-
-
-// new changes:
-// pass1
-// PS C:\Users\razva\playwright-project\tests\chipy\shop> & "C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222 --user-data-dir="C:\Temp\chrome-cdp" https://dev.chipy.com/shop
-
-// pass2
-// npx playwright test --workers=1
-
-// pass3
-// npx playwright show-report

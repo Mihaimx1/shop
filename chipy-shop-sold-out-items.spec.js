@@ -1,26 +1,6 @@
 const { test, expect } = require('./cdp-fixtures');
 const SHOP_URL = 'https://dev.chipy.com/shop';
 
-// Covers the "Sold Out Items" section of the shop page:
-//   <section class="shop-main-section" data-section="soldOut">
-//     <h2>Sold Out Items - Your Favorites Will Be Back, Start Saving Up Coins!</h2>
-//     ...<article class="shop-card"> x N ...
-//   </section>
-//
-// Each sold-out card has:
-//   - an info trigger  -> <button class="shop-card__tooltip" data-description="...">
-//   - a logo link      -> <a class="shop-card__logo" href="/item-name/...">
-//   - a title link     -> <h3 class="shop-card__title"><a href="/item-name/...">
-//   - stats            -> .shop-card__stats has 2 spans (coins + "Level N+")
-//   - an INACTIVE buy button -> <button class="shop-buy-button shop-buy-button--sold-out">Sold Out</button>
-//   - a sold-out badge -> <span class="sold-out">Sold Out</span>
-//
-// NOTE ON THE INFO POPUP: the info button (.shop-card__tooltip) holds the popup
-// text in its `data-description` attribute. The popup itself is a Tooltipster
-// instance (.tooltipster-base) shown on HOVER — clicking the icon dismisses it.
-// Tooltipster binds lazily and uses hover-intent, so the hover test re-hovers
-// (moving the mouse away between tries) until the popup appears.
-// ---------------------------------------------------------------------------
 test.describe('Chipy Shop - Sold Out Items section', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(SHOP_URL, { waitUntil: 'domcontentloaded' });
@@ -30,7 +10,7 @@ test.describe('Chipy Shop - Sold Out Items section', () => {
     page.locator('section.shop-main-section[data-section="soldOut"]');
 
   // ---------------------------------------------------------------------------
-  // 1) THE H2 HEADING
+  // 1) Check H2
   // ---------------------------------------------------------------------------
   test('Section H2 heading has the expected text', async ({ page }) => {
     const section = soldOut(page);
@@ -91,14 +71,11 @@ test.describe('Chipy Shop - Sold Out Items section', () => {
     const card        = soldOut(page).locator('article.shop-card').first();
     const infoTrigger = card.locator('.shop-card__tooltip');
     const popup       = page.locator('.tooltipster-base');
-
-    // The popup content comes from the trigger's data-description (the markup
-    // wraps it in literal quotes, which we strip).
     const raw = await infoTrigger.getAttribute('data-description');
     const description = decodeURIComponent(raw || '').replace(/^"|"$/g, '').trim();
     expect(description.length).toBeGreaterThan(0);
 
-    // Hover to open the Tooltipster popup. It is bound lazily and uses
+    // Hover to open the Tooltipster popup. It uses
     // hover-intent, so move the mouse away and hover again until it shows.
     await expect(async () => {
       await page.mouse.move(0, 0);

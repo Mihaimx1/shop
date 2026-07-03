@@ -1,25 +1,6 @@
 const { test, expect } = require('./cdp-fixtures');
 const SHOP_URL = 'https://dev.chipy.com/shop';
 
-// Covers the "Page Contributors" section of the shop page:
-//   <div class="authors-section">
-//     <h3 class="authors-section__title">Page Contributors</h3>
-//     <div class="author-card">
-//       <div class="author-card__main-info">
-//         <div class="author-card__img"><img alt="Adela Ababi"></div>
-//         <h2 class="author-card__name">Adela Ababi</h2>
-//         <p class="author-card__role">Community Manager</p>
-//         <ul class="author-card__socials"><li><a ...></li>...</ul>
-//       </div>
-//       <div class="author-card__content">
-//         ... <a class="author-card__link" href="/author/adela-ababi">Read Full Bio</a>
-//       </div>
-//     </div> ...
-//   </div>
-//
-// This section is OPTIONAL: a page may have no contributors at all. Every test
-// first checks for the section and `test.skip()`s when it is absent.
-// ---------------------------------------------------------------------------
 test.describe('Chipy Shop - Page Contributors section', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(SHOP_URL, { waitUntil: 'domcontentloaded' });
@@ -29,7 +10,7 @@ test.describe('Chipy Shop - Page Contributors section', () => {
   const cards   = (page) => section(page).locator('.author-card');
 
   // Skip the test when the page has no Page Contributors section. Give the
-  // server-rendered block a short chance to show, then decide.
+  // server-rendered block a short chance to show
   async function skipIfAbsent(page) {
     await section(page).first().waitFor({ state: 'visible', timeout: 4000 }).catch(() => {});
     const present = (await section(page).count()) > 0;
@@ -37,7 +18,7 @@ test.describe('Chipy Shop - Page Contributors section', () => {
   }
 
   // ---------------------------------------------------------------------------
-  // 1) THE H3 HEADING
+  // 1) CHECK H3
   // ---------------------------------------------------------------------------
   test('Section H3 heading has the expected text', async ({ page }) => {
     await skipIfAbsent(page);
@@ -66,9 +47,9 @@ test.describe('Chipy Shop - Page Contributors section', () => {
       expect((await name.innerText()).trim().length).toBeGreaterThan(0);
       await expect(card.locator('.author-card__role')).toBeVisible();
 
-      // Social links are NOT mandatory — some contributors have none. The
-      // socials list is part of the card; if it contains links, each must point
-      // somewhere, but zero links is perfectly valid.
+      // Social links are NOT mandatory — some contributors have none. 
+      // The socials list is part of the card; if it contains links, each must point
+      // somewhere, but zero links is also valid.
       await expect(card.locator('.author-card__socials')).toBeAttached();
       const socialLinks = card.locator('.author-card__socials a');
       for (let s = 0; s < (await socialLinks.count()); s++) {

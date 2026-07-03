@@ -1,24 +1,6 @@
 const { test, expect } = require('./cdp-fixtures');
 const SHOP_URL = 'https://dev.chipy.com/shop';
 
-// Covers the "Latest Neosurf News" article section of the shop page:
-//   <h2>Latest Neosurf News</h2>
-//   <a href="/news/...">
-//     <div class="image_wrap"><picture><img alt="... image"></picture></div>
-//     <div class="box_info">
-//       <span class="box_title">...</span>
-//       <div class="box_footer">
-//         <span class="box_date">author</span>
-//         <span class="box_read"><time datetime="2024-05-13">May 13, 2024</time></span>
-//         <span class="box_rating">N min read</span>
-//       </div>
-//       <div class="box_text_preview">...</div>
-//     </div>
-//   </a> ...
-//   <a class="see_all" href="/news">See All Articles</a>
-//
-// The wrapper has no class of its own, so the article cards are addressed via
-// `a[href^="/news/"]:has(.box_title)` (unique to this section).
 // ---------------------------------------------------------------------------
 test.describe('Chipy Shop - Latest [articles] section', () => {
   test.beforeEach(async ({ page }) => {
