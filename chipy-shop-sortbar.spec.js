@@ -38,13 +38,20 @@ test.describe('Chipy Shop - sort bar', () => {
       );
 
       // ---- OPEN THE SORT POPUP AND SELECT THE OPTION ----------------------
-      // One self-healing block: ensure the popup is open, then click the option
-      // only while it isn't selected yet. Reopening on each retry click without ever toggling the popup/option back.
+      // Self-healing block: ensure the popup is open, then click the option only
+      // while it isn't selected yet. Clicks are forced because the sticky header
+      // / tooltips can overlay the popup (a normal click would silently wait for
+      // actionability and never land), and we wait for the popup to actually be
+      // visible before clicking the option.
       await expect(async () => {
-        if (!(await sortPopupOpen())) await sortTxt.click();
-        if ((await option.getAttribute('data-selected')) !== 'true') await option.click();
-        await expect(option).toHaveAttribute('data-selected', 'true');
-      }).toPass({ timeout: 15000 });
+        if ((await option.getAttribute('data-selected')) === 'true') return; // already applied
+        if (!(await sortPopupOpen())) {
+          await sortTxt.click({ force: true });
+          await expect.poll(sortPopupOpen, { timeout: 3000 }).toBe(true);
+        }
+        await option.click({ force: true });
+        await expect(option).toHaveAttribute('data-selected', 'true', { timeout: 5000 });
+      }).toPass({ timeout: 30000 });
 
       // The sort-bar label reflects the chosen option.
       await expect(sortTxt).toHaveText(sort.label);

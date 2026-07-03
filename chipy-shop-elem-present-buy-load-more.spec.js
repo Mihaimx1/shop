@@ -19,7 +19,7 @@
 // purchased" / "not enough coins" states – the buy tests are written to skip
 // items that cannot be purchased and pick another one.
 // =============================================================================
-const { test, expect } = require("../fixtures");
+const { test, expect } = require("./cdp-fixtures");
 
 const SHOP_URL = "https://dev.chipy.com/shop";
 
