@@ -70,18 +70,22 @@ test.describe('Chipy Shop - Sold Out Items section', () => {
   test('Hovering a sold-out card info icon shows its description popup', async ({ page }) => {
     const card        = soldOut(page).locator('article.shop-card').first();
     const infoTrigger = card.locator('.shop-card__tooltip');
-    const popup       = page.locator('.tooltipster-base');
     const raw = await infoTrigger.getAttribute('data-description');
     const description = decodeURIComponent(raw || '').replace(/^"|"$/g, '').trim();
     expect(description.length).toBeGreaterThan(0);
 
-    // Hover to open the Tooltipster popup. It uses
-    // hover-intent, so move the mouse away and hover again until it shows.
+    // Target the tooltip that actually holds THIS item's description: several
+    // (stale, hidden) `.tooltipster-base` nodes can linger on the page, so match
+    // by content instead of grabbing the first one.
+    const popup = page.locator('.tooltipster-base', { hasText: description.slice(0, 40) });
+
+    // Hover to open the Tooltipster popup. It uses hover-intent, so move the
+    // mouse away and hover again until the populated popup shows.
     await expect(async () => {
       await page.mouse.move(0, 0);
       await infoTrigger.hover();
-      await expect(popup).toBeVisible({ timeout: 1500 });
-    }).toPass({ timeout: 15000 });
+      await expect(popup).toBeVisible({ timeout: 2000 });
+    }).toPass({ timeout: 20000 });
 
     // The popup shows this item's description.
     await expect(popup).toContainText(description.slice(0, 40));

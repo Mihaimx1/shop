@@ -1,9 +1,11 @@
 const { test, expect } = require('./cdp-fixtures');
+const { ensureLoggedOut } = require('./chipy-auth');
 const ITEM_URL = 'https://dev.chipy.com/item-name/311-free-spins-test';
 
 test.describe('Chipy single item - breadcrumbs & item box', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(ITEM_URL, { waitUntil: 'domcontentloaded' });
+    await ensureLoggedOut(page, ITEM_URL);
   });
 
   // ---------------------------------------------------------------------------

@@ -42,4 +42,25 @@ async function ensureLoggedIn(page, { username, password }) {
   });
 }
 
-module.exports = { ensureLoggedIn };
+/**
+ * Ensures the session is logged OUT (for tests that assert logged-out UI, e.g.
+ * the "create account" warning note or the "Buy Now prompts login" flow). The
+ * shared CDP browser can already be logged in from an earlier test, so we clear
+ * the site session cookie (keeping Cloudflare's cf_clearance) and reload.
+ *
+ * Pass the URL to land on after logging out (defaults to reloading the current
+ * page).
+ */
+async function ensureLoggedOut(page, url) {
+  const loggedIn = await page.evaluate(() => document.body.classList.contains('user-logged-in'));
+  if (loggedIn) {
+    // Drop the PHP session cookie but keep the Cloudflare clearance cookie.
+    await page.context().clearCookies({ name: 'PHPSESSID' });
+  }
+  await page.goto(url || page.url(), { waitUntil: 'domcontentloaded' });
+  await page.waitForFunction(() => !document.body.classList.contains('user-logged-in'), null, {
+    timeout: 15000,
+  });
+}
+
+module.exports = { ensureLoggedIn, ensureLoggedOut };

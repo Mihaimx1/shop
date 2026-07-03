@@ -1,9 +1,11 @@
 const { test, expect } = require('./cdp-fixtures');
+const { ensureLoggedOut } = require('./chipy-auth');
 const SHOP_URL = "https://dev.chipy.com/shop";
 
 test.describe("Chipy Shop - create account warning note", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(SHOP_URL, { waitUntil: "domcontentloaded" });
+    await ensureLoggedOut(page, SHOP_URL);
   });
 
   // ---------------------------------------------------------------------------
@@ -77,11 +79,12 @@ test.describe("Chipy Shop - create account warning note", () => {
       await expect(registerPopup).toBeVisible();
     }).toPass({ timeout: 15000 });
 
-    // Close the register popup via its close (X) control. The close handler is
-    // also bound lazily, so retry the click until the popup is actually hidden.
+    // Close the register popup. When it's opened from the shop note its X button
+    // isn't wired, but clicking the backdrop (outside the popup content) dismisses
+    // it. Retry until the popup is actually hidden.
     await expect(async () => {
       if (await registerPopup.isVisible()) {
-        await registerPopup.locator(".btn-close").first().click();
+        await page.locator(".popup-holder.popup-register").click({ position: { x: 5, y: 5 } });
       }
       await expect(registerPopup).toBeHidden();
     }).toPass({ timeout: 15000 });

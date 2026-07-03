@@ -20,6 +20,10 @@ test.describe('Chipy Shop - Avatars filter', () => {
   // SELECTING EACH AVATAR SUB-FILTER FILTERS THE LIST + LOAD MORE LOADS EVERYTHING
   // ---------------------------------------------------------------------------
   test('Each avatar sub-filter shows only its items and Load More loads them all', async ({ page }) => {
+    // Iterates every avatar sub-category (reload + open + select + load-all each),
+    // which comfortably exceeds the default 30s test timeout.
+    test.setTimeout(180000);
+
     const avatarsToggler = page.locator('button#avatars.shop-filters__item--toggler');
 
     // The "Available Items" section: holds the cards, the "Load More" button and
